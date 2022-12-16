@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/mainLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/charcoal"
+        android:padding="20dp"
+        tools:context=".MainActivity">
+
+        <ScrollView
+            android:id="@+id/day_list_scroll_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:scrollbars="none">
+
+            <RelativeLayout
+                android:id="@+id/day_list_layout"
+                android:layout_width="match_parent"
+                android:layout_height="600dp"
+                android:orientation="vertical">
+
+
+                <Button
+                    android:id="@+id/add_day_btn"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:layout_width="@dimen/plus_button_size"
+                    android:layout_height="@dimen/plus_button_size"
+                    android:background="@drawable/circle"
+                    android:layout_centerHorizontal="true"
+                    android:gravity="center"
+                    android:text="+"
+                    android:textColor="@color/white"
+                    android:textSize="50sp" />
+            </RelativeLayout>
+        </ScrollView>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="0dp"-->
+    <!--        android:background="@color/persianGreen"-->
+    <!--        android:fontFamily="@font/ubuntu_bold"-->
+    <!--        android:gravity="center"-->
+    <!--        android:letterSpacing="0.09"-->
+    <!--        android:onClick="OnDayClick"-->
+    <!--        android:text="0/10"-->
+    <!--        android:textColor="@color/maizeCrayola"-->
+    <!--        android:textSize="40sp"-->
