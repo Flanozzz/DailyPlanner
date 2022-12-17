@@ -9,6 +9,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.dailyplanner.AppDbHelper;
 import com.example.dailyplanner.DatabaseHelper;
 import com.example.dailyplanner.DayView;
 import com.example.dailyplanner.Interfaces.Observed;
@@ -23,9 +24,7 @@ public class MainViewModel extends ViewModel implements Observed {
     private MutableLiveData<ArrayList<DayModel>> daysLiveData;
     private MutableLiveData<Integer> lastDayId;
 
-    private DatabaseHelper dbHelper;
-    private SQLiteDatabase db;
-    private Cursor cursor;
+    AppDbHelper dbHelper;
 
     public LiveData<Integer> getLastDayId(){
         return lastDayId;
@@ -35,34 +34,17 @@ public class MainViewModel extends ViewModel implements Observed {
         daysLiveData = new MutableLiveData<>(new ArrayList<>());
         lastDayId = new MutableLiveData<>();
         lastDayId.setValue(1);
-        Log.w("AAA", "view model");
+        dbHelper = new AppDbHelper(context);
+        dbHelper.findDays();
     }
 
-    public void loadDays(Context ctx){
-        dbHelper = new DatabaseHelper(ctx);
-        db = dbHelper.open();
-
-        cursor = db.rawQuery("select * from " + DatabaseHelper.TABLE, null);
-        cursor.moveToFirst();
-        daysLiveData.setValue(new ArrayList<>());
-        int lineCount = cursor.getCount();
-        for(int i = 0; i < lineCount; i++) {
-            int dayId = cursor.getInt(0);
-            int dayNum = cursor.getInt(1);
-            int dayMonth = cursor.getInt(2);
-            DayModel day = new DayModel(dayId, dayNum, dayMonth);
-            Objects.requireNonNull(daysLiveData.getValue()).add(day);
-            cursor.moveToNext();
-        }
-        cursor.close();
-        notifyObservers();
-        ArrayList<DayModel> days = daysLiveData.getValue();
-        lastDayId.setValue(days.get(days.size() - 1).getId());
+    public void loadDays(){
+        daysLiveData.setValue(dbHelper.findDays());
     }
 
-    public void saveDay(DayView view, int num, int month){
+    public void saveDay(DayView view, int num, int month, int year){
         lastDayId.setValue(lastDayId.getValue() + 1);
-        DayModel day = new DayModel(lastDayId.getValue(), num, month, view);
+        DayModel day = new DayModel(lastDayId.getValue(), num, month, year, view);
         daysLiveData.getValue().add(day);
         notifyObservers();
         //add to database...

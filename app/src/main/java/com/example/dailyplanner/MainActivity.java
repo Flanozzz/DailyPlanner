@@ -69,10 +69,6 @@ public class MainActivity extends AppCompatActivity implements DaysObserver {
         {
             createDay();
             createDay();
-            createDay();
-            createDay();
-            createDay();
-            createDay();
             isFirstStart = false;
         }
     }
@@ -87,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements DaysObserver {
             newDay.setLayoutParams(newDayParams);
         }
 
-        viewModel.saveDay(newDay, 13, 12); //saveDay меняет занчение lastDayId
+        viewModel.saveDay(newDay, 13, 12, 2022); //saveDay меняет занчение lastDayId
         newDay.setId(lastDayViewId);
         RelativeLayout.LayoutParams addDayBtnParams =
                 (RelativeLayout.LayoutParams)addDayBtn.getLayoutParams();
