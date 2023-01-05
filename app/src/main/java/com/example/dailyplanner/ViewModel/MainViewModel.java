@@ -47,6 +47,7 @@ public class MainViewModel extends ViewModel implements Observed {
         DayModel day = new DayModel(lastDayId.getValue(), num, month, year, view);
         daysLiveData.getValue().add(day);
         notifyObservers();
+        view.setId(lastDayId.getValue());
         //add to database...
     }
 

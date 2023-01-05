@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements DaysObserver {
         }
 
         viewModel.saveDay(newDay, 13, 12, 2022); //saveDay меняет занчение lastDayId
-        newDay.setId(lastDayViewId);
+        //newDay.setId(lastDayViewId);
         RelativeLayout.LayoutParams addDayBtnParams =
                 (RelativeLayout.LayoutParams)addDayBtn.getLayoutParams();
         addDayBtnParams.addRule(RelativeLayout.BELOW, lastDayViewId);
