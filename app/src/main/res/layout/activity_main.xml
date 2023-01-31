@@ -30,7 +30,6 @@
                 android:layout_height="600dp"
                 android:orientation="vertical">
 
-
                 <Button
                     android:id="@+id/add_day_btn"
                     style="?android:attr/borderlessButtonStyle"

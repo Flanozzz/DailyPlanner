@@ -1,6 +1,6 @@
 package com.example.dailyplanner.Interfaces;
 
-public interface Observed {
+public interface DaysObserved {
     void addObserver(DaysObserver observer);
 
     void removeObserver(DaysObserver observer);

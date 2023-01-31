@@ -1,53 +1,88 @@
 package com.example.dailyplanner.Model;
 
 import android.annotation.SuppressLint;
-import android.view.View;
+import android.widget.Toast;
 
 import com.example.dailyplanner.DayView;
+import com.example.dailyplanner.Interfaces.DayModelObserved;
+import com.example.dailyplanner.Interfaces.DayModelObserver;
+import com.example.dailyplanner.Interfaces.DaysObserved;
+import com.example.dailyplanner.MainActivity;
+import com.example.dailyplanner.databinding.PartDayBinding;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
-public class DayModel {
+public class DayModel implements DayModelObserved {
     final private int id;
-    private final int day;
-    private final int month;
-    private final int year;
+    private final long unixDate;
     private ArrayList<String> tasks;
     private DayView view;
+    private ArrayList<DayModelObserver> observers = new ArrayList<>();
 
-    public DayModel(int id, int day, int month, int year, DayView view){
-        this(id, day, month, year);
-        this.view = view;
+    public DayModel(int id, long unixDate, DayView view){
+        this(id, unixDate);
+        this.setView(view);
     }
 
-    public DayModel(int id, int day, int month, int year){
-        this.day = day;
-        this.month = month;
-        this.id  = id;
-        this.year = year;
+    public DayModel(int id, long unixDate){
+        this.id = id;
+        this.unixDate = unixDate;
+    }
+
+    public long getUnixDate(){
+        return unixDate;
     }
 
     @SuppressLint("DefaultLocale")
-    public String ToString(){
-        return String.format("%d: %d.%d", id, day, month);
+    public String getStringDate(){
+        Date date = new Date(unixDate);
+        String[] splitDate = DateFormat.getDateInstance(DateFormat.SHORT)
+                .format(date).split("\\.");
+
+        return String.format("%s.%s.%s", splitDate[0], splitDate[1], splitDate[2]);
     }
 
 
+    @SuppressLint("SetTextI18n")
     public void setView(DayView view){
         this.view = view;
+        PartDayBinding binding = PartDayBinding.bind(view);
+        binding.removeButton.setOnClickListener(v -> notifyByRemove());
+        this.view.setOnClickListener(v -> notifyByShow());
+        binding.date.setText(getStringDate());
     }
 
-    public int getDay() {
-        return day;
-    }
-
-    public int getMonth(){
-        return month;
+    public DayView getView(){
+        return view;
     }
 
     public int getId(){
         return id;
     }
 
-    public DayView getView() { return view; }
+    @Override
+    public void addObserver(DayModelObserver observer) {
+        observers.add(observer);
+    }
+
+    @Override
+    public void removeObserver(DayModelObserver observer) {
+        observers.remove(observer);
+    }
+
+    @Override
+    public void notifyByRemove() {
+        for (DayModelObserver observer : observers){
+            observer.removeDay(this);
+        }
+    }
+
+    @Override
+    public void notifyByShow() {
+        for (DayModelObserver observer : observers){
+            observer.showInfo(this);
+        }
+    }
 }

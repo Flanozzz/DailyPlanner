@@ -13,4 +13,6 @@
     <color name="maizeCrayola">#E9C46A</color>
     <color name="sandyBrown">#F4A261</color>
     <color name="burntSienna">#E76F51</color>
+    <color name="transparent">#00000000</color>
+
 </resources>

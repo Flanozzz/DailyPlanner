@@ -20,13 +20,13 @@ public class AppSQLiteHelper extends SQLiteOpenHelper {
     Context applicationContext;
 
     public AppSQLiteHelper(Context applicationContext) {
-        super(applicationContext, "database.db", null, 1);
+        super(applicationContext, "database1.db", null, 1);
         this.applicationContext = applicationContext;
     }
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        Log.d("AAA", "onCreate SQLiteOpenHelper");
+        Log.w("AAA", "onCreate SQLiteOpenHelper");
         String sql = "";
         StringBuilder strBuilder = new StringBuilder();
 
@@ -46,7 +46,7 @@ public class AppSQLiteHelper extends SQLiteOpenHelper {
             e.printStackTrace();
         }
 
-        Log.w("AAA", sql);
+        Log.e("AAA", sql);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             Arrays.stream(sql.split(";"))

@@ -2,23 +2,74 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:parentTag="android.widget.LinearLayout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    tools:parentTag="android.widget.LinearLayout">
 
-    <TextView
-        android:id="@+id/day"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="100dp"
-        android:background="@color/persianGreen"
-        android:fontFamily="@font/ubuntu_bold"
-        android:gravity="center"
-        android:letterSpacing="0.19"
-        android:text="@string/no_tasks"
-        android:textColor="@color/maizeCrayola"
-        android:textSize="40sp"
         android:layout_marginBottom="20dp"
-        tools:ignore="MissingConstraints,TextContrastCheck" />
+        android:background="@color/persianGreen">
+
+        <View
+            android:id="@+id/line1"
+            android:layout_width="25dp"
+            android:layout_height="7dp"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="16dp"
+            android:layout_marginRight="4dp"
+            android:background="@drawable/rectangle"
+            android:rotation="45" />
+
+        <View
+            android:id="@+id/line2"
+            android:layout_width="25dp"
+            android:layout_height="7dp"
+            android:layout_alignStart="@id/line1"
+            android:layout_alignTop="@id/line1"
+            android:background="@drawable/rectangle"
+            android:rotation="-45" />
+
+        <Button
+            android:id="@+id/removeButton"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_alignRight="@id/line1"
+            android:layout_marginTop="5dp"
+            android:backgroundTint="@color/transparent"
+            android:stateListAnimator="@null" />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_centerInParent="true">
+            <TextView
+                android:id="@+id/text"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:layout_centerInParent="true"
+                android:fontFamily="@font/ubuntu_bold"
+                android:gravity="center"
+                android:letterSpacing="0.14"
+                android:text="@string/no_tasks"
+                android:textColor="@color/maizeCrayola"
+                android:textSize="30sp"
+                android:layout_gravity="center_horizontal"
+                tools:ignore="MissingConstraints,TextContrastCheck" />
+
+            <TextView
+                android:id="@+id/date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/text"
+                android:layout_centerInParent="true"
+                android:fontFamily="@font/ubuntu_medium"
+                android:text="@string/zero_date"
+                android:textColor="@color/maizeCrayola"
+                android:layout_gravity="center_horizontal"
+                android:textSize="18sp" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
+    </RelativeLayout>
 
 
 </merge>

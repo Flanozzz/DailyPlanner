@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.example.dailyplanner.Model.DayModel;
 
@@ -28,22 +29,37 @@ public class AppDbHelper {
         //TODO db const string
         for (int i = 0; i < cursor.getCount(); i++) {
             int id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
-            long unixDate = cursor.getInt(cursor.getColumnIndexOrThrow("data"));
-
-            Date date = new Date(unixDate * 1000);
-            String[] splitDate = DateFormat.getDateInstance(DateFormat.SHORT)
-                    .format(date).split("\\.");
-
-            days.add(new DayModel(id,
-                    Integer.parseInt(splitDate[0]),
-                    Integer.parseInt(splitDate[1]),
-                    Integer.parseInt(splitDate[2])));
-
+            long unixDate = cursor.getLong(cursor.getColumnIndexOrThrow("data"));
+            days.add(new DayModel(id, unixDate)); //year
             cursor.moveToNext();
         }
         cursor.close();
         return days;
     }
 
+    @SuppressLint("DefaultLocale")
+    public void InsertDay(long unixTime){
+        Log.w("AAA", "Insert Day");
+        db.execSQL(String.format("INSERT INTO days (data) VALUES (%d)", unixTime));
+        for (DayModel day : findDays()){
+            Log.e("AAA", day.getId() + "  " + day.getUnixDate());
+        }
+    }
 
+    @SuppressLint("DefaultLocale")
+    public void DeleteDay(long unixTime){
+        Log.w("AAA", "Delete Day");
+        Cursor cursor = db.rawQuery(String.format("SELECT * FROM days WHERE data = %d", unixTime), null);
+        cursor.moveToFirst();
+        Log.w("AAA", cursor.getCount() + "");
+        for (int i = 0; i < cursor.getCount(); i++) {
+            int id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
+            long unixDate = cursor.getLong(cursor.getColumnIndexOrThrow("data"));
+            Log.d("AAA", id + "  " + unixDate);
+
+            cursor.moveToNext();
+        }
+
+        db.execSQL(String.format("DELETE FROM days WHERE data = %d", unixTime));
+    }
 }

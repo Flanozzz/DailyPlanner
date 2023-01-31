@@ -2,4 +2,5 @@
     <string name="app_name">DailyPlanner</string>
     <string name="no_tasks">Нет задач</string>
     <string name="dayIdPrefix">day</string>
+    <string name="zero_date">00.00.0000</string>
 </resources>
