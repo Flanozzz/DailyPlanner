@@ -1,20 +1,18 @@
 package com.example.dailyplanner.Model;
 
 import android.annotation.SuppressLint;
-import android.widget.Toast;
 
 import com.example.dailyplanner.DayView;
-import com.example.dailyplanner.Interfaces.DayModelObserved;
-import com.example.dailyplanner.Interfaces.DayModelObserver;
-import com.example.dailyplanner.Interfaces.DaysObserved;
-import com.example.dailyplanner.MainActivity;
+import com.example.dailyplanner.Interfaces.Observers.DayModelObserved;
+import com.example.dailyplanner.Interfaces.Observers.DayModelObserver;
 import com.example.dailyplanner.databinding.PartDayBinding;
 
+import java.io.Serializable;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class DayModel implements DayModelObserved {
+public class DayModel implements DayModelObserved, Serializable {
     final private int id;
     private final long unixDate;
     private ArrayList<String> tasks;
@@ -23,7 +21,7 @@ public class DayModel implements DayModelObserved {
 
     public DayModel(int id, long unixDate, DayView view){
         this(id, unixDate);
-        this.setView(view);
+        setView(view);
     }
 
     public DayModel(int id, long unixDate){
@@ -50,7 +48,7 @@ public class DayModel implements DayModelObserved {
         this.view = view;
         PartDayBinding binding = PartDayBinding.bind(view);
         binding.removeButton.setOnClickListener(v -> notifyByRemove());
-        this.view.setOnClickListener(v -> notifyByShow());
+        this.view.setOnClickListener(v -> {notifyByShow();});
         binding.date.setText(getStringDate());
     }
 
@@ -80,9 +78,16 @@ public class DayModel implements DayModelObserved {
     }
 
     @Override
-    public void notifyByShow() {
+    public void notifyByShowInfo() {
         for (DayModelObserver observer : observers){
             observer.showInfo(this);
+        }
+    }
+
+    @Override
+    public void notifyByShow() {
+        for (DayModelObserver observer : observers){
+            observer.show(this);
         }
     }
 }

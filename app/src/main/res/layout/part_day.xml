@@ -7,8 +7,8 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="100dp"
-        android:layout_marginBottom="20dp"
-        android:background="@color/persianGreen">
+        android:layout_marginBottom="15dp"
+        android:background="@color/backgroundLight2">
 
         <View
             android:id="@+id/line1"
@@ -17,7 +17,7 @@
             android:layout_alignParentEnd="true"
             android:layout_marginTop="16dp"
             android:layout_marginRight="4dp"
-            android:background="@drawable/rectangle"
+            android:background="@drawable/rectangle_for_cross"
             android:rotation="45" />
 
         <View
@@ -26,7 +26,7 @@
             android:layout_height="7dp"
             android:layout_alignStart="@id/line1"
             android:layout_alignTop="@id/line1"
-            android:background="@drawable/rectangle"
+            android:background="@drawable/rectangle_for_cross"
             android:rotation="-45" />
 
         <Button
@@ -41,20 +41,21 @@
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_centerInParent="true">
+            android:layout_centerInParent="true"
+            android:orientation="vertical">
+
             <TextView
                 android:id="@+id/text"
                 android:layout_width="wrap_content"
                 android:layout_height="35dp"
                 android:layout_centerInParent="true"
+                android:layout_gravity="center_horizontal"
                 android:fontFamily="@font/ubuntu_bold"
                 android:gravity="center"
                 android:letterSpacing="0.14"
                 android:text="@string/no_tasks"
-                android:textColor="@color/maizeCrayola"
+                android:textColor="@color/text"
                 android:textSize="30sp"
-                android:layout_gravity="center_horizontal"
                 tools:ignore="MissingConstraints,TextContrastCheck" />
 
             <TextView
@@ -63,10 +64,10 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/text"
                 android:layout_centerInParent="true"
+                android:layout_gravity="center_horizontal"
                 android:fontFamily="@font/ubuntu_medium"
                 android:text="@string/zero_date"
-                android:textColor="@color/maizeCrayola"
-                android:layout_gravity="center_horizontal"
+                android:textColor="@color/text"
                 android:textSize="18sp" />
         </androidx.appcompat.widget.LinearLayoutCompat>
     </RelativeLayout>

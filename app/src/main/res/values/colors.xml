@@ -8,11 +8,24 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="charcoal">#264653</color>
-    <color name="persianGreen">#2A9D8F</color>
-    <color name="maizeCrayola">#E9C46A</color>
+    <color name="background">#264653</color>
+    <color name="backgroundLight3">#2A9D8F</color>
+    <color name="text">#E9C46A</color>
     <color name="sandyBrown">#F4A261</color>
     <color name="burntSienna">#E76F51</color>
     <color name="transparent">#00000000</color>
+
+    <color name="persianGreen">#000</color>
+
+    <color name="c1">#001219</color>
+    <color name="backgroundLight1">#005f73</color>
+    <color name="backgroundLight2">#0a9396</color>
+    <color name="backgroundLight4">#94d2bd</color>
+    <color name="c2">#e9d8a6</color>
+    <color name="ee9b00">#ee9b00</color>
+    <color name="ca6702">#ca6702</color>
+    <color name="bb3e03">#bb3e03</color>
+    <color name="ae2012">#ae2012</color>
+    <color name="negative">#9b2226</color>
 
 </resources>

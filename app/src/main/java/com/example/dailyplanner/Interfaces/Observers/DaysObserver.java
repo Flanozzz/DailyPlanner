@@ -1,4 +1,4 @@
-package com.example.dailyplanner.Interfaces;
+package com.example.dailyplanner.Interfaces.Observers;
 
 import com.example.dailyplanner.Model.DayModel;
 

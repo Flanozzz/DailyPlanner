@@ -1,31 +1,29 @@
 package com.example.dailyplanner.ViewModel;
 
 import android.content.Context;
-import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.dailyplanner.AppDbHelper;
 import com.example.dailyplanner.DayView;
-import com.example.dailyplanner.Interfaces.DayModelObserver;
-import com.example.dailyplanner.Interfaces.DaysObserved;
-import com.example.dailyplanner.Interfaces.DaysObserver;
+import com.example.dailyplanner.Interfaces.Observers.DayModelObserver;
+import com.example.dailyplanner.Interfaces.Observers.DaysObserved;
+import com.example.dailyplanner.Interfaces.Observers.DaysObserver;
 import com.example.dailyplanner.Model.DayModel;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class MainViewModel extends ViewModel implements DaysObserved {
+public class DayListViewModel extends ViewModel implements DaysObserved {
     private ArrayList<DaysObserver> observers = new ArrayList<>();
     private MutableLiveData<ArrayList<DayModel>> daysLiveData;
 
-    AppDbHelper dbHelper;
+    private AppDbHelper dbHelper;
 
-    public MainViewModel(Context context){
+    public DayListViewModel(Context context){
         daysLiveData = new MutableLiveData<>(new ArrayList<>());
         dbHelper = new AppDbHelper(context);
-        dbHelper.findDays();
     }
 
     public void loadDays(){
@@ -46,9 +44,7 @@ public class MainViewModel extends ViewModel implements DaysObserved {
         DayModel day = new DayModel(dayId, unixTimeDate, view);
         day.addObserver(observer);
         daysLiveData.getValue().add(day);
-        //notifyObservers();
-        //add to database...
-        dbHelper.InsertDay(unixTimeDate);
+        dbHelper.InsertDay(dayId, unixTimeDate);
     }
 
     public void removeDay(DayModel dayModel){
