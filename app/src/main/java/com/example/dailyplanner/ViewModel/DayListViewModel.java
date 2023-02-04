@@ -1,6 +1,7 @@
 package com.example.dailyplanner.ViewModel;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -31,7 +32,7 @@ public class DayListViewModel extends ViewModel implements DaysObserved {
         notifyObservers();
     }
 
-    public void saveDay(long unixTimeDate, DayView view, DayModelObserver observer){
+    public void saveNewDay(long unixTimeDate, DayView view, DayModelObserver observer){
         ArrayList<DayModel> days = daysLiveData.getValue();
         assert days != null;
         int dayId;
@@ -41,7 +42,8 @@ public class DayListViewModel extends ViewModel implements DaysObserved {
         else{
             dayId = 0;
         }
-        DayModel day = new DayModel(dayId, unixTimeDate, view);
+        Log.w("AAA", dayId + " saveNewDay");
+        DayModel day = new DayModel(dayId, unixTimeDate, new ArrayList<>(), view);
         day.addObserver(observer);
         daysLiveData.getValue().add(day);
         dbHelper.InsertDay(dayId, unixTimeDate);

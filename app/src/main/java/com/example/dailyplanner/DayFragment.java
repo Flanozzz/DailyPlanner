@@ -2,6 +2,7 @@ package com.example.dailyplanner;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.RelativeLayout;
 
 import com.example.dailyplanner.Factories.DayViewModelFactory;
@@ -28,6 +30,7 @@ import com.example.dailyplanner.databinding.FragmentDayBinding;
 import com.example.dailyplanner.databinding.PartTaskFieldBinding;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 
 public class DayFragment extends Fragment implements DayObserver, TaskModelObserver {
@@ -60,7 +63,7 @@ public class DayFragment extends Fragment implements DayObserver, TaskModelObser
             dayModel = (DayModel)getArguments().getSerializable(ARG_DAY_PARAM);
         }
         viewModel = new ViewModelProvider
-                (this, new DayViewModelFactory(getContext(), dayModel.getId())).get(DayViewModel.class);
+                (this, new DayViewModelFactory(getContext(), dayModel)).get(DayViewModel.class);
         viewModel.addObserver(this);
         viewModel.loadTasks();
     }
@@ -74,45 +77,54 @@ public class DayFragment extends Fragment implements DayObserver, TaskModelObser
         addTaskBtn = binding.addTaskBtn;
         tasksContainer = binding.tasksContainer;
 
-        binding.mainLayout.setOnTouchListener(new View.OnTouchListener() {
-            public boolean onTouch(View v, MotionEvent event) {
-
-                if(event.getAction() == MotionEvent.ACTION_MOVE){
-                    View view = getActivity().getCurrentFocus();
-                    if (view != null) {
-                        InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
-                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                        view.clearFocus();
-                    }
-                }
-                return true;
-            }
+        binding.mainLayout.setOnTouchListener((view, event) -> {
+            clearFocusOnTouch(view, event);
+            return true;
         });
 
         binding.addTaskBtn.setOnClickListener(view -> {
-            TaskFieldView newTask = createTaskView();
-            viewModel.addTask(newTask, dayModel.getId(), this);
-            putAddTaskButtonAfterLastTask();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                binding.scrollContainer.scrollToDescendant(addTaskBtn);
-            }
+            createAndLoadTaskView();
         });
 
-
-        for (TaskModel taskModel: tasks){
-            TaskFieldView newTaskView = createTaskView();
-            taskModel.addObserver(this);
-            taskModel.setView(newTaskView);
-        }
+        loadTasksViews();
         putAddTaskButtonAfterLastTask();
         return binding.getRoot();
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
+    public void onPause() {
+        super.onPause();
         viewModel.saveChanges();
     }
+
+    private void clearFocusOnTouch(View view, MotionEvent event){
+        if(event.getAction() == MotionEvent.ACTION_MOVE){
+            View currentFocus = requireActivity().getCurrentFocus();
+            if (currentFocus != null) {
+                InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(currentFocus.getWindowToken(), 0);
+                currentFocus.clearFocus();
+            }
+        }
+    }
+
+    private void createAndLoadTaskView(){
+        TaskFieldView newTask = createTaskView();
+        viewModel.addTask(newTask, dayModel.getId(), this);
+        putAddTaskButtonAfterLastTask();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            binding.scrollContainer.scrollToDescendant(addTaskBtn);
+        }
+    }
+
+    private void loadTasksViews(){
+        for (TaskModel taskModel: tasks){
+            TaskFieldView newTaskView = createTaskView();
+            taskModel.addObserver(this);
+            taskModel.setView(newTaskView);
+        }
+    }
+
 
     @SuppressLint("ResourceType")
     private TaskFieldView createTaskView(){
@@ -138,9 +150,6 @@ public class DayFragment extends Fragment implements DayObserver, TaskModelObser
         if(tasks.size() == 0){
             return;
         }
-        int lastTaskId = tasks.get(tasks.size() - 1)
-                .getView()
-                .getId();
         RelativeLayout.LayoutParams addTaskBtnParams =
                 (RelativeLayout.LayoutParams)addTaskBtn.getLayoutParams();
         addTaskBtnParams.addRule(RelativeLayout.BELOW, lastTaskViewId);
@@ -191,16 +200,27 @@ public class DayFragment extends Fragment implements DayObserver, TaskModelObser
 
     @SuppressLint("UseCompatLoadingForDrawables")
     @Override
-    public void changeCheckbox(PartTaskFieldBinding taskBinding, boolean isDone) {
-        Log.w("AAA", "changeCheckbox");
+    public void changeTaskStatus(PartTaskFieldBinding taskBinding, boolean isDone, String task) {
         Drawable background;
+        EditText editField = taskBinding.editField;
+        editField.setClickable(!isDone);
+        editField.setCursorVisible(!isDone);
+        editField.setFocusable(!isDone);
+        editField.setFocusableInTouchMode(!isDone);
         if(isDone){
             background = getResources()
                     .getDrawable(R.drawable.rectangle_for_checkbox_active, null);
+
+            editField.setText("");
+            editField.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);
+            editField.setText(task);
         }
         else{
             background = getResources()
                     .getDrawable(R.drawable.rectangle_for_checkbox_inactive, null);
+            editField.setText("");
+            editField.getPaint().setFlags(0);
+            editField.setText(task);
         }
         taskBinding.checkbox.setBackground(background);
     }

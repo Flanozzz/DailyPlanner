@@ -1,32 +1,41 @@
 package com.example.dailyplanner.Model;
 
 import android.annotation.SuppressLint;
+import android.os.Build;
+import android.view.View;
+import android.widget.ArrayAdapter;
 
 import com.example.dailyplanner.DayView;
 import com.example.dailyplanner.Interfaces.Observers.DayModelObserved;
 import com.example.dailyplanner.Interfaces.Observers.DayModelObserver;
+import com.example.dailyplanner.R;
 import com.example.dailyplanner.databinding.PartDayBinding;
 
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+
+import kotlinx.coroutines.scheduling.Task;
 
 public class DayModel implements DayModelObserved, Serializable {
     final private int id;
     private final long unixDate;
-    private ArrayList<String> tasks;
+    private ArrayList<TaskModel> tasks;
     private DayView view;
     private ArrayList<DayModelObserver> observers = new ArrayList<>();
 
-    public DayModel(int id, long unixDate, DayView view){
-        this(id, unixDate);
+    public DayModel(int id, long unixDate, ArrayList<TaskModel> tasks, DayView view){
+        this(id, unixDate, tasks);
         setView(view);
     }
 
-    public DayModel(int id, long unixDate){
+    public DayModel(int id, long unixDate, ArrayList<TaskModel> tasks){
         this.id = id;
         this.unixDate = unixDate;
+        this.tasks = tasks;
     }
 
     public long getUnixDate(){
@@ -50,6 +59,27 @@ public class DayModel implements DayModelObserved, Serializable {
         binding.removeButton.setOnClickListener(v -> notifyByRemove());
         this.view.setOnClickListener(v -> {notifyByShow();});
         binding.date.setText(getStringDate());
+        int completedTasksCount = 0;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            completedTasksCount = (int)tasks.stream().filter(TaskModel::isDone).count();
+        }
+        String viewText;
+        if(completedTasksCount == tasks.size()){
+            if(completedTasksCount == 0){
+                viewText = view.getContext()
+                        .getResources()
+                        .getString(R.string.no_tasks);
+            }
+            else {
+                viewText = "Всё сделано";
+            }
+        }
+        else{
+            viewText = tasks.size() > 0 ?
+                    completedTasksCount + "/" + tasks.size() :
+                    view.getContext().getResources().getString(R.string.no_tasks);
+        }
+        binding.text.setText(viewText);
     }
 
     public DayView getView(){
@@ -58,6 +88,10 @@ public class DayModel implements DayModelObserved, Serializable {
 
     public int getId(){
         return id;
+    }
+
+    public ArrayList<TaskModel> getTasks(){
+        return tasks;
     }
 
     @Override

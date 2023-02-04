@@ -21,19 +21,24 @@
                     android:textSize="15sp"
                     android:layout_marginRight="10dp"
                     android:layout_marginLeft="10dp"/>
+
                 <EditText
                     android:id="@+id/edit_field"
                     android:layout_width="0dp"
                     android:layout_height="60dp"
                     android:layout_weight="1"
                     android:autofillHints="text"
+                    android:background="@android:color/transparent"
+                    android:fontFamily="@font/ubuntu"
                     android:hint="Введите задачу"
-                    android:textColorHint="@color/backgroundLight1"
-                    android:textColor="@color/backgroundLight4"
-                    android:textSize="22sp"
                     android:paddingLeft="10dp"
+                    android:text="tttttadsfask"
+                    android:textColor="@color/backgroundLight4"
+                    android:textColorHint="@color/backgroundLight1"
+                    android:textSize="22sp"
                     tools:ignore="TouchTargetSizeCheck"
-                    android:background="@android:color/transparent"/>
+                    android:inputType="textNoSuggestions"
+                    android:maxLines="1"/>
                 <Button
                     android:id="@+id/remove_button"
                     android:layout_width="30dp"

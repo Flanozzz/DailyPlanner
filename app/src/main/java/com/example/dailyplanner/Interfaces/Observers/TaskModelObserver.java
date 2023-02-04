@@ -6,5 +6,5 @@ import com.example.dailyplanner.databinding.PartTaskFieldBinding;
 public interface TaskModelObserver {
     void removeTask(TaskModel taskModel);
 
-    void changeCheckbox(PartTaskFieldBinding binding, boolean isDone);
+    void changeTaskStatus(PartTaskFieldBinding binding, boolean isDone, String task);
 }

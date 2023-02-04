@@ -8,7 +8,6 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -81,7 +80,7 @@ public class DayListFragment extends Fragment implements DaysObserver, DayModelO
             else{
                 unixDate = System.currentTimeMillis();
             }
-            viewModel.saveDay(unixDate, newDayView, this);  //year
+            viewModel.saveNewDay(unixDate, newDayView, this);  //year
             putAddDayButtonAfterLastDay();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 dayListScrollContainer.scrollToDescendant(addDayBtn);

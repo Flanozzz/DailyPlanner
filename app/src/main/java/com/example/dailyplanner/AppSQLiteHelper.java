@@ -20,7 +20,7 @@ public class AppSQLiteHelper extends SQLiteOpenHelper {
     Context applicationContext;
 
     public AppSQLiteHelper(Context applicationContext) {
-        super(applicationContext, "database1.db", null, 1);
+        super(applicationContext, "database2.db", null, 1);
         this.applicationContext = applicationContext;
     }
 

@@ -10,6 +10,7 @@ import com.example.dailyplanner.AppDbHelper;
 import com.example.dailyplanner.Interfaces.Observers.DayObserved;
 import com.example.dailyplanner.Interfaces.Observers.DayObserver;
 import com.example.dailyplanner.Interfaces.Observers.TaskModelObserver;
+import com.example.dailyplanner.Model.DayModel;
 import com.example.dailyplanner.Model.TaskModel;
 import com.example.dailyplanner.TaskFieldView;
 
@@ -18,25 +19,21 @@ import java.util.Objects;
 
 
 public class DayViewModel extends ViewModel implements DayObserved {
-
-    private MutableLiveData<ArrayList<TaskModel>> dayTasksLiveData;
     private MutableLiveData<ArrayList<TaskModel>> allTasksLiveData;
     private ArrayList<DayObserver> observers = new ArrayList<>();
-    private int dayId;
+    private MutableLiveData<DayModel> dayModelLiveData;
 
     private AppDbHelper dbHelper;
 
-    public DayViewModel(Context context, int dayId){
-        dayTasksLiveData = new MutableLiveData<>();
+    public DayViewModel(Context context, DayModel dayModel){
         allTasksLiveData = new MutableLiveData<>();
-        dayTasksLiveData.setValue(new ArrayList<>());
+        dayModelLiveData = new MutableLiveData<>();
         allTasksLiveData.setValue(new ArrayList<>());
-        this.dayId = dayId;
+        dayModelLiveData.setValue(dayModel);
         dbHelper = new AppDbHelper(context);
     }
 
     public void loadTasks(){
-        dayTasksLiveData.setValue(dbHelper.findTasksByDay(dayId));
         allTasksLiveData.setValue(dbHelper.findAllTasks());
         notifyObservers();
     }
@@ -54,13 +51,13 @@ public class DayViewModel extends ViewModel implements DayObserved {
         TaskModel newTask = new TaskModel(taskId, dayId, view);
         newTask.addObserver(observer);
         allTasks.add(newTask);
-        Objects.requireNonNull(dayTasksLiveData.getValue()).add(newTask);
-        dbHelper.InsertTask(taskId, "", false, dayId);
+        Objects.requireNonNull(dayModelLiveData.getValue()).getTasks().add(newTask);
+        dbHelper.InsertTask(taskId, taskId+"", false, dayId);
     }
 
     public void saveChanges(){
         for (TaskModel task :
-                dayTasksLiveData.getValue()) {
+                Objects.requireNonNull(dayModelLiveData.getValue()).getTasks()) {
             if(task.isChanged()){
                 dbHelper.UpdateTask(task.getId(), task.isDone(), task.getTask());
             }
@@ -68,7 +65,7 @@ public class DayViewModel extends ViewModel implements DayObserved {
     }
 
     public void removeTask(TaskModel taskModel){
-        Objects.requireNonNull(dayTasksLiveData.getValue()).remove(taskModel);
+        Objects.requireNonNull(dayModelLiveData.getValue()).getTasks().remove(taskModel);
         Objects.requireNonNull(allTasksLiveData.getValue()).remove(taskModel);
         dbHelper.DeleteTask(taskModel.getId());
     }
@@ -87,7 +84,7 @@ public class DayViewModel extends ViewModel implements DayObserved {
     public void notifyObservers() {
         for (DayObserver obs :
                 observers) {
-            obs.handleEvent(dayTasksLiveData.getValue());
+            obs.handleEvent(Objects.requireNonNull(dayModelLiveData.getValue()).getTasks());
         }
     }
 }

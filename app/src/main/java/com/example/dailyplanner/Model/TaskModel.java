@@ -1,11 +1,7 @@
 package com.example.dailyplanner.Model;
 
-import android.graphics.drawable.Drawable;
-import android.util.Log;
-
 import com.example.dailyplanner.Interfaces.Observers.TaskModelObserved;
 import com.example.dailyplanner.Interfaces.Observers.TaskModelObserver;
-import com.example.dailyplanner.R;
 import com.example.dailyplanner.TaskFieldView;
 import com.example.dailyplanner.databinding.PartTaskFieldBinding;
 
@@ -20,9 +16,9 @@ public class TaskModel implements TaskModelObserved {
     private boolean isChanged = false;
     private ArrayList<TaskModelObserver> observers = new ArrayList<>();
 
-    public TaskModel(int taskId, int dayId, TaskFieldView view){
+    public TaskModel(int id, int dayId, TaskFieldView view){
         setView(view);
-        this.id = taskId;
+        this.id = id;
         this.dayId = dayId;
         task = "";
         isDone = false;
@@ -99,8 +95,7 @@ public class TaskModel implements TaskModelObserved {
     public void notifyByCheckboxChanged(PartTaskFieldBinding binding) {
         for (TaskModelObserver observer:
                 observers) {
-            Log.w("AAA", "notify");
-            observer.changeCheckbox(binding, isDone);
+            observer.changeTaskStatus(binding, isDone, task);
         }
     }
 }
