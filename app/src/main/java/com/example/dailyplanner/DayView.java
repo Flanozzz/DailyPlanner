@@ -17,7 +17,6 @@ import java.net.ConnectException;
 
 @SuppressLint("ViewConstructor")
 public class DayView extends RelativeLayout {
-
     public DayView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         init();

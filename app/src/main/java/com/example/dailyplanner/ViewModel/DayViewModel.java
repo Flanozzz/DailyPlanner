@@ -2,6 +2,7 @@ package com.example.dailyplanner.ViewModel;
 
 import android.content.Context;
 import android.util.Log;
+import android.widget.LinearLayout;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -58,9 +59,7 @@ public class DayViewModel extends ViewModel implements DayObserved {
     public void saveChanges(){
         for (TaskModel task :
                 Objects.requireNonNull(dayModelLiveData.getValue()).getTasks()) {
-            if(task.isChanged()){
-                dbHelper.UpdateTask(task.getId(), task.isDone(), task.getTask());
-            }
+            dbHelper.UpdateTask(task.getId(), task.isDone(), task.getTask());
         }
     }
 

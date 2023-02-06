@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 
-import kotlinx.coroutines.scheduling.Task;
 
 public class DayModel implements DayModelObserved, Serializable {
     final private int id;
@@ -59,6 +58,10 @@ public class DayModel implements DayModelObserved, Serializable {
         binding.removeButton.setOnClickListener(v -> notifyByRemove());
         this.view.setOnClickListener(v -> {notifyByShow();});
         binding.date.setText(getStringDate());
+        setProgressText(binding);
+    }
+
+    private void setProgressText(PartDayBinding binding){
         int completedTasksCount = 0;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             completedTasksCount = (int)tasks.stream().filter(TaskModel::isDone).count();

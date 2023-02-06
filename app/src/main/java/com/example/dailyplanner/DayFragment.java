@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -30,7 +31,6 @@ import com.example.dailyplanner.databinding.FragmentDayBinding;
 import com.example.dailyplanner.databinding.PartTaskFieldBinding;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 
 public class DayFragment extends Fragment implements DayObserver, TaskModelObserver {
@@ -42,7 +42,19 @@ public class DayFragment extends Fragment implements DayObserver, TaskModelObser
     private RelativeLayout tasksContainer;
     private ArrayList<TaskModel> tasks = new ArrayList<TaskModel>();
     private DayViewModel viewModel;
+    private TaskListMover taskListMover;
     private int lastTaskViewId = 0;
+    private int createdTasksCount = 0;
+    private float taskHeight = 0;
+
+//    private float movableTaskBaseY = 0;
+//    private float movableTaskDownY = 0;
+//    private TaskModel prevByMovableTask = null;
+//    private TaskModel nextByMovableTask = null;
+//    private int movableTaskIndex = -1;
+//    private float minYpos = 9999999;
+//    private float maxYpos = -9999999;
+//    private boolean isMovable = false;
 
     public DayFragment() {
         // Required empty public constructor
@@ -66,6 +78,8 @@ public class DayFragment extends Fragment implements DayObserver, TaskModelObser
                 (this, new DayViewModelFactory(getContext(), dayModel)).get(DayViewModel.class);
         viewModel.addObserver(this);
         viewModel.loadTasks();
+        taskListMover = new TaskListMover(tasks);
+        taskHeight = new TaskFieldView(getContext()).getHeight();
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -101,7 +115,8 @@ public class DayFragment extends Fragment implements DayObserver, TaskModelObser
         if(event.getAction() == MotionEvent.ACTION_MOVE){
             View currentFocus = requireActivity().getCurrentFocus();
             if (currentFocus != null) {
-                InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
+                InputMethodManager imm = (InputMethodManager)getActivity()
+                        .getSystemService(Activity.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(currentFocus.getWindowToken(), 0);
                 currentFocus.clearFocus();
             }
@@ -110,6 +125,7 @@ public class DayFragment extends Fragment implements DayObserver, TaskModelObser
 
     private void createAndLoadTaskView(){
         TaskFieldView newTask = createTaskView();
+
         viewModel.addTask(newTask, dayModel.getId(), this);
         putAddTaskButtonAfterLastTask();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -125,34 +141,137 @@ public class DayFragment extends Fragment implements DayObserver, TaskModelObser
         }
     }
 
-
-    @SuppressLint("ResourceType")
+    @SuppressLint({"ResourceType", "ClickableViewAccessibility"})
     private TaskFieldView createTaskView(){
         TaskFieldView newTask = new TaskFieldView(getContext());
         tasksContainer.addView(newTask);
-
-        if(lastTaskViewId > 0){
-            RelativeLayout.LayoutParams newTaskParams = (RelativeLayout.LayoutParams)newTask.getLayoutParams();
-            newTaskParams.addRule(RelativeLayout.BELOW, lastTaskViewId);
-            newTask.setLayoutParams(newTaskParams);
+//        newTask.setY(newTask.getY() + 183 * createdTasksCount);
+//        tasksContainer.setMinimumHeight(183 * createdTasksCount + 183);
+//        Log.w("AAA", newTask.getY() + " " + newTask.getHeight() + " " + createdTasksCount);
+//        createdTasksCount++;
+        if(lastTaskViewId > 0 && tasks.size() > 0){
+            putViewBelowViewId(newTask, lastTaskViewId);
         }
         else{
-            RelativeLayout.LayoutParams newTaskParams = (RelativeLayout.LayoutParams)newTask.getLayoutParams();
-            newTaskParams.addRule(RelativeLayout.BELOW, binding.highestLine.getId());
-            newTask.setLayoutParams(newTaskParams);
+            putViewBelowViewId(newTask, binding.highestLine.getId());
         }
         lastTaskViewId+=1;
         newTask.setId(lastTaskViewId);
+        newTask.getBinding().editField.setOnTouchListener((view, event) ->
+                taskListMover.dragEndDropEvent(newTask, event));
+        newTask.getBinding().editField.setOnLongClickListener(view -> {
+            newTask.bringToFront();
+            taskListMover.makeMovable();
+            return true;
+        });
         return newTask;
     }
+
+//     private boolean dragEndDropEvent(TaskFieldView movableTask, MotionEvent event){
+//        float newMinYpos = tasks.get(0).getView().getY();
+//        float newMaxYpos = tasks.get(tasks.size() - 1).getView().getY();
+//        if(newMinYpos < minYpos){
+//            minYpos = newMinYpos;
+//        }
+//        if(newMaxYpos > maxYpos){
+//            maxYpos = newMaxYpos;
+//        }
+//        switch (event.getActionMasked()){
+//            case MotionEvent.ACTION_DOWN:
+//                movableTaskDownY = event.getY();
+//                movableTaskBaseY = movableTask.getY();
+//                TaskModel movableTaskModel = null;
+//                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+//                    movableTaskModel =
+//                            tasks.stream().filter(taskModel ->
+//                                    taskModel.getView()
+//                                    .equals(movableTask))
+//                                    .findAny()
+//                                    .get();
+//                }
+//                assert movableTaskModel != null;
+//                movableTaskIndex = tasks.indexOf(movableTaskModel);
+////                Log.w("AAA", movableTaskIndex + "");
+//                if(movableTaskIndex > 0){
+//                    prevByMovableTask = tasks.get(movableTaskIndex - 1);
+////                    Log.w("AAA", prevByMovableTask.getView().getY() + "");
+//                }
+//                if(movableTaskIndex < tasks.size()-1){
+//                    nextByMovableTask = tasks.get(movableTaskIndex + 1);
+////                    Log.w("AAA", nextByMovableTask.getView().getY() + "");
+//                }
+//                break;
+//            case MotionEvent.ACTION_MOVE:
+//                if(!isMovable){
+//                    break;
+//                }
+//                float movedY = event.getY();
+//                float distance = movedY - movableTaskDownY;
+//                float nextYpos = movableTask.getY() + distance;
+//                float taskHeight = movableTask.getHeight();
+//                if(nextYpos < minYpos){
+//                    nextYpos = minYpos;
+//                }
+//                if(nextYpos > maxYpos){
+//                    nextYpos = maxYpos;
+//                }
+//                if(prevByMovableTask != null && nextYpos <= prevByMovableTask.getView().getY()){
+//                    float currPrevTaskY = prevByMovableTask.getView().getY();
+//                    prevByMovableTask.getView().setY(currPrevTaskY + taskHeight);
+//                    tasks.set(movableTaskIndex - 1, tasks.get(movableTaskIndex));
+//                    tasks.set(movableTaskIndex, prevByMovableTask);
+//                    movableTaskIndex--;
+//                    movableTaskBaseY = currPrevTaskY;
+//                    if(movableTaskIndex == 0){
+//                        prevByMovableTask = null;
+//                    }
+//                    else{
+//                        nextByMovableTask = prevByMovableTask;
+//                        prevByMovableTask = tasks.get(movableTaskIndex - 1);
+//                    }
+//                    Log.w("AAA", "prevTask");
+//                }
+//                if(nextByMovableTask != null && nextYpos >= nextByMovableTask.getView().getY()){
+//                    float currNextTaskY = nextByMovableTask.getView().getY();
+//                    nextByMovableTask.getView().setY(currNextTaskY - taskHeight);
+//                    tasks.set(movableTaskIndex + 1, tasks.get(movableTaskIndex));
+//                    tasks.set(movableTaskIndex, nextByMovableTask);
+//                    movableTaskIndex++;
+//                    movableTaskBaseY = currNextTaskY;
+//                    if(movableTaskIndex == tasks.size() - 1){
+//                        nextByMovableTask = null;
+//                    }
+//                    else{
+//                        prevByMovableTask = nextByMovableTask;
+//                        nextByMovableTask = tasks.get(movableTaskIndex + 1);
+//                    }
+//                    Log.w("AAA", "nextTask");
+//                }
+//                movableTask.setY(nextYpos);
+//
+//                break;
+//            case MotionEvent.ACTION_UP:
+//                movableTask.setY(movableTaskBaseY);
+//                movableTaskIndex = -1;
+//                prevByMovableTask = null;
+//                nextByMovableTask = null;
+//                return true;
+//        }
+//        return false;
+//    }
 
     private void putAddTaskButtonAfterLastTask(){
         if(tasks.size() == 0){
             return;
         }
+        putViewBelowViewId(addTaskBtn, lastTaskViewId);
+    }
+
+    private void putViewBelowViewId(View view, int id){
         RelativeLayout.LayoutParams addTaskBtnParams =
-                (RelativeLayout.LayoutParams)addTaskBtn.getLayoutParams();
-        addTaskBtnParams.addRule(RelativeLayout.BELOW, lastTaskViewId);
+                (RelativeLayout.LayoutParams)view.getLayoutParams();
+        addTaskBtnParams.addRule(RelativeLayout.BELOW, id);
+        view.setLayoutParams(addTaskBtnParams);
     }
 
     @Override
@@ -175,23 +294,15 @@ public class DayFragment extends Fragment implements DayObserver, TaskModelObser
             TaskFieldView prevTaskView = tasks.get(currTaskModelIndex - 1).getView();
             TaskFieldView nextTaskView = tasks.get(currTaskModelIndex + 1).getView();
 
-            RelativeLayout.LayoutParams nextTaskParams =
-                    (RelativeLayout.LayoutParams)nextTaskView.getLayoutParams();
-            nextTaskParams.addRule(RelativeLayout.BELOW, prevTaskView.getId());
-            nextTaskView.setLayoutParams(nextTaskParams);
+            putViewBelowViewId(nextTaskView, prevTaskView.getId());
         }
         else { //currTaskModelIndex == 0
             if(tasks.size() > 1){
                 TaskFieldView nextTaskView = tasks.get(currTaskModelIndex + 1).getView();
-                RelativeLayout.LayoutParams nextTaskParams =
-                        (RelativeLayout.LayoutParams)nextTaskView.getLayoutParams();
-                nextTaskParams.addRule(RelativeLayout.BELOW, binding.highestLine.getId());
-                nextTaskView.setLayoutParams(nextTaskParams);
+                putViewBelowViewId(nextTaskView, binding.highestLine.getId());
             }
             else{
-                RelativeLayout.LayoutParams addTaskBtnParams =
-                        (RelativeLayout.LayoutParams)addTaskBtn.getLayoutParams();
-                addTaskBtnParams.addRule(RelativeLayout.BELOW, binding.highestLine.getId());
+                putViewBelowViewId(addTaskBtn, binding.highestLine.getId());
             }
         }
         tasksContainer.removeView(currTaskView);
