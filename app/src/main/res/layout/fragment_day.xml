@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -17,11 +17,15 @@
         android:fontFamily="@font/ubuntu_medium"
         android:text="@string/zero_date"
         android:textColor="@color/text"
-        android:layout_gravity="center"/>
-    <ScrollView
+        android:layout_gravity="center"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="20dp"/>
+    <com.example.dailyplanner.Views.ControlledScrollView
         android:id="@+id/scroll_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:scrollbars="none"
+        android:layout_below="@id/info_text">
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -30,8 +34,15 @@
                 android:id="@+id/highest_line"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
+                android:background="@drawable/rectangle_for_line"/>
+
+            <View
+                android:id="@+id/line_above_add_btn"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
                 android:background="@drawable/rectangle_for_line"
-                android:layout_marginTop="20dp"/>
+                android:layout_below="@id/highest_line"/>
+
             <Button
                 android:id="@+id/add_task_btn"
                 android:layout_width="40dp"
@@ -46,14 +57,28 @@
                 android:paddingBottom="2dp"
                 android:textSize="22sp"
                 android:layout_marginStart="10dp"
-                android:layout_below="@id/highest_line"/>
+                android:layout_below="@id/line_above_add_btn"/>
 
             <View
-                android:id="@+id/line3"
+                android:id="@+id/line_below_add_dtn1"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="@drawable/rectangle_for_line"
                 android:layout_below="@id/add_task_btn"/>
+            <View
+                android:id="@+id/line_below_add_dtn2"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@drawable/rectangle_for_line"
+                android:layout_below="@id/line_below_add_dtn1"/>
         </RelativeLayout>
-    </ScrollView>
-</LinearLayout>
+    </com.example.dailyplanner.Views.ControlledScrollView>
+
+    <Button
+        android:id="@+id/front_panel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/transparent"
+        android:clickable="false"/>
+
+</RelativeLayout>

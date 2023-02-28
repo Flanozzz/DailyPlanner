@@ -1,7 +1,7 @@
 package com.example.dailyplanner.ViewModel;
 
 import android.content.Context;
-import android.util.Log;
+import android.util.Pair;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -19,6 +19,7 @@ import java.util.Objects;
 public class DayListViewModel extends ViewModel implements DaysObserved {
     private ArrayList<DaysObserver> observers = new ArrayList<>();
     private MutableLiveData<ArrayList<DayModel>> daysLiveData;
+    private int maxDayId = 0;
 
     private AppDbHelper dbHelper;
 
@@ -28,21 +29,23 @@ public class DayListViewModel extends ViewModel implements DaysObserved {
     }
 
     public void loadDays(){
-        daysLiveData.setValue(dbHelper.findDays());
+        Pair<ArrayList<DayModel>, Integer> dbRes = dbHelper.findDaysAndGetId();
+        daysLiveData.setValue(dbRes.first);
+        maxDayId = dbRes.second;
         notifyObservers();
     }
 
     public void saveNewDay(long unixTimeDate, DayView view, DayModelObserver observer){
         ArrayList<DayModel> days = daysLiveData.getValue();
         assert days != null;
-        int dayId;
-        if(days.size() > 0){
-            dayId = days.get(days.size() - 1).getId() + 1;
-        }
-        else{
-            dayId = 0;
-        }
-        Log.w("AAA", dayId + " saveNewDay");
+        maxDayId++;
+        int dayId = maxDayId;
+//        if(days.size() > 0){
+//            dayId = days.get(days.size() - 1).getId() + 1;
+//        }
+//        else{
+//            dayId = 0;
+//        }
         DayModel day = new DayModel(dayId, unixTimeDate, new ArrayList<>(), view);
         day.addObserver(observer);
         daysLiveData.getValue().add(day);

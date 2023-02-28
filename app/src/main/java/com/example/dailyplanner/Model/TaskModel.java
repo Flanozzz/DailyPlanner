@@ -13,6 +13,7 @@ import com.example.dailyplanner.TaskFieldView;
 import com.example.dailyplanner.databinding.PartTaskFieldBinding;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 
 public class TaskModel implements TaskModelObserved {
@@ -22,26 +23,26 @@ public class TaskModel implements TaskModelObserved {
     private String task;
     private boolean isDone;
     private boolean isChanged = false;
-    private int order;
+    private int orderInList;
     private ArrayList<TaskModelObserver> observers = new ArrayList<>();
 
-    public TaskModel(int id, int dayId, TaskFieldView view){
-        this(id, dayId, 0);
+    public TaskModel(int id, int dayId, int orderInList, TaskFieldView view){
+        this(id, dayId, orderInList);
         setView(view);
         task = "";
         isDone = false;
     }
 
-    public TaskModel(int id, String task, boolean isDone, int dayId){
-        this(id, dayId, 0);
+    public TaskModel(int id, String task, boolean isDone, int dayId, int orderInList){
+        this(id, dayId, orderInList);
         this.task = task;
         this.isDone = isDone;
     }
 
-    private TaskModel(int id, int dayId, int order){
+    private TaskModel(int id, int dayId, int orderInList){
         this.id = id;
         this.dayId = dayId;
-        this.order = order;
+        this.orderInList = orderInList;
     }
 
     public void setView(TaskFieldView taskView) {
@@ -72,6 +73,9 @@ public class TaskModel implements TaskModelObserved {
     }
 
     private void changeState(PartTaskFieldBinding binding){
+        if(Objects.equals(task, "")){
+            return;
+        }
         isChanged = true;
         isDone = !isDone;
         notifyByCheckboxChanged(binding);
@@ -91,6 +95,10 @@ public class TaskModel implements TaskModelObserved {
 
     public boolean isDone() {
         return isDone;
+    }
+
+    public int getOrderInList() {
+        return orderInList;
     }
 
     @Override
@@ -119,7 +127,7 @@ public class TaskModel implements TaskModelObserved {
     public void notifyByCheckboxChanged(PartTaskFieldBinding binding) {
         for (TaskModelObserver observer:
                 observers) {
-            observer.changeTaskStatus(binding, isDone, task);
+            observer.changeTaskStatus(view, isDone, task);
         }
     }
 }

@@ -15,8 +15,11 @@ import com.example.dailyplanner.Model.DayModel;
 import com.example.dailyplanner.Model.TaskModel;
 import com.example.dailyplanner.TaskFieldView;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Objects;
+
+import kotlinx.coroutines.scheduling.Task;
 
 
 public class DayViewModel extends ViewModel implements DayObserved {
@@ -39,7 +42,8 @@ public class DayViewModel extends ViewModel implements DayObserved {
         notifyObservers();
     }
 
-    public void addTask(TaskFieldView view, int dayId, TaskModelObserver observer){
+    public void addTask(TaskFieldView view, int dayId, int orderInList, TaskModelObserver observer){
+        Log.w("AAA", orderInList + "");
         int taskId;
         ArrayList<TaskModel> allTasks = allTasksLiveData.getValue();
         assert allTasks != null;
@@ -49,17 +53,19 @@ public class DayViewModel extends ViewModel implements DayObserved {
         else{
             taskId = allTasks.get(allTasks.size() - 1).getId() + 1;
         }
-        TaskModel newTask = new TaskModel(taskId, dayId, view);
+        TaskModel newTask = new TaskModel(taskId, dayId, orderInList, view);
         newTask.addObserver(observer);
         allTasks.add(newTask);
         Objects.requireNonNull(dayModelLiveData.getValue()).getTasks().add(newTask);
-        dbHelper.InsertTask(taskId, taskId+"", false, dayId);
+        dbHelper.InsertTask(taskId, "", false, dayId, orderInList);
     }
 
     public void saveChanges(){
-        for (TaskModel task :
-                Objects.requireNonNull(dayModelLiveData.getValue()).getTasks()) {
-            dbHelper.UpdateTask(task.getId(), task.isDone(), task.getTask());
+        ArrayList<TaskModel> tasks =
+                Objects.requireNonNull(dayModelLiveData.getValue()).getTasks();
+        for (int i = 0; i < tasks.size(); i++){
+            TaskModel task = tasks.get(i);
+            dbHelper.UpdateTask(task.getId(), task.isDone(), task.getTask(), i);
         }
     }
 

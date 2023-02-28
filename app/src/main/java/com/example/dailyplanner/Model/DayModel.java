@@ -2,6 +2,7 @@ package com.example.dailyplanner.Model;
 
 import android.annotation.SuppressLint;
 import android.os.Build;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 
@@ -17,6 +18,7 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Locale;
 
 
 public class DayModel implements DayModelObserved, Serializable {
@@ -44,8 +46,11 @@ public class DayModel implements DayModelObserved, Serializable {
     @SuppressLint("DefaultLocale")
     public String getStringDate(){
         Date date = new Date(unixDate);
-        String[] splitDate = DateFormat.getDateInstance(DateFormat.SHORT)
-                .format(date).split("\\.");
+        String dateFormat = DateFormat.getDateInstance(DateFormat.SHORT)
+                .format(date);
+        dateFormat = dateFormat.replace(".", " ");
+        dateFormat = dateFormat.replace("/", " ");
+        String[] splitDate = dateFormat.split(" ");
 
         return String.format("%s.%s.%s", splitDate[0], splitDate[1], splitDate[2]);
     }

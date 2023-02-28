@@ -44,7 +44,7 @@
                             android:fontFamily="@font/ubuntu"
                             android:hint="Введите задачу"
                             android:paddingLeft="10dp"
-                            android:text="tttttadsfask"
+                            android:text="texttexttext"
                             android:textColor="@color/backgroundLight4"
                             android:textColorHint="@color/backgroundLight1"
                             android:textSize="22sp"
